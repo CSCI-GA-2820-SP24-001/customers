@@ -1,16 +1,20 @@
 """
 TestCustomer API Service Test Suite
 """
+
 import os
 import logging
 from unittest import TestCase
 from wsgi import app
 from service.common import status
 from service.models import db, Customer
+from .factories import CustomerFactory
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
+BASE_URL = "/customers"
 
 
 ######################################################################
@@ -18,7 +22,7 @@ DATABASE_URI = os.getenv(
 ######################################################################
 # pylint: disable=too-many-public-methods
 class TestYourResourceService(TestCase):
-    """ REST API Server Tests """
+    """REST API Server Tests"""
 
     @classmethod
     def setUpClass(cls):
@@ -42,7 +46,7 @@ class TestYourResourceService(TestCase):
         db.session.commit()
 
     def tearDown(self):
-        """ This runs after each test """
+        """This runs after each test"""
         db.session.remove()
 
     ######################################################################
@@ -50,8 +54,32 @@ class TestYourResourceService(TestCase):
     ######################################################################
 
     def test_index(self):
-        """ It should call the home page """
+        """It should call the home page"""
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    # Todo: Add your test cases here...
+    def test_create_customer(self):
+        """It should Create a new Customer"""
+        test_customer = CustomerFactory()
+        logging.debug("Test Customer: %s", test_customer.serialize())
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Make sure location header is set
+        location = response.headers.get("Location", None)
+        self.assertIsNotNone(location)
+
+        # Check the data is correct
+        new_customer = response.get_json()
+        self.assertEqual(new_customer["name"], test_customer.name)
+        self.assertEqual(new_customer["address"], test_customer.address)
+        self.assertEqual(new_customer["email"], test_customer.email)
+
+        # Todo: Uncomment this code when get_customers is implemented
+        # # Check that the location header was correct
+        # response = self.client.get(location)
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # new_customer = response.get_json()
+        # self.assertEqual(new_customer["name"], test_customer.name)
+        # self.assertEqual(new_customer["address"], test_customer.address)
+        # self.assertEqual(new_customer["email"], test_customer.email)

@@ -92,6 +92,7 @@ class Customer(db.Model):
             self.name = data["name"]
             self.address = data["address"]
             self.email = data["email"]
+
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

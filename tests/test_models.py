@@ -15,7 +15,9 @@ DATABASE_URI = os.getenv(
 
 
 ######################################################################
+
 #  C U S T O M E R   M O D E L   T E S T   C A S E S
+
 ######################################################################
 # pylint: disable=too-many-public-methods
 class TestCustomer(TestCase):
@@ -59,5 +61,6 @@ class TestCustomer(TestCase):
         self.assertEqual(data.name, customer.name)
         self.assertEqual(data.address, customer.address)
         self.assertEqual(data.email, customer.email)
+
 
     # Todo: Add your test cases here...like update_customer, delete_customer
