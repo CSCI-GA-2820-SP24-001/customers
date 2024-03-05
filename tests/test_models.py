@@ -15,7 +15,9 @@ DATABASE_URI = os.getenv(
 
 
 ######################################################################
-#  Customer   M O D E L   T E S T   C A S E S
+
+#  C U S T O M E R   M O D E L   T E S T   C A S E S
+
 ######################################################################
 # pylint: disable=too-many-public-methods
 class TestCustomer(TestCase):
@@ -48,15 +50,17 @@ class TestCustomer(TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
+    def test_create_customer(self):
         """It should create a Customer"""
-        # Todo: Remove this test case example
-        resource = CustomerFactory()
-        resource.create()
-        self.assertIsNotNone(resource.id)
+        customer = CustomerFactory()
+        customer.create()
+        self.assertIsNotNone(customer.id)
         found = Customer.all()
         self.assertEqual(len(found), 1)
-        data = Customer.find(resource.id)
-        self.assertEqual(data.name, resource.name)
+        data = Customer.find(customer.id)
+        self.assertEqual(data.name, customer.name)
+        self.assertEqual(data.address, customer.address)
+        self.assertEqual(data.email, customer.email)
 
-    # Todo: Add your test cases here...
+
+    # Todo: Add your test cases here...like update_customer, delete_customer

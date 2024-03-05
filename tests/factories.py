@@ -16,5 +16,7 @@ class CustomerFactory(factory.Factory):
 
     id = factory.Sequence(lambda n: n)
     name = factory.Faker("first_name")
+    address = factory.Faker("address")
+    email = factory.Faker("email")
 
     # Todo: Add your other attributes here...

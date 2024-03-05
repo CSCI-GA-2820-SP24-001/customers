@@ -10,6 +10,7 @@ from service.common import status
 from service.models import db, Customer
 from .factories import CustomerFactory
 
+
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
