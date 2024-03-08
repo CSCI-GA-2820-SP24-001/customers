@@ -43,10 +43,11 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
+
 ######################################################################
 # READ A PET
 ######################################################################
-@app.route("/pets/<int:pet_id>", methods=["GET"])
+@app.route("/customers/<int:customer_id>", methods=["GET"])
 def get_customers(customer_id):
     """
     Retrieve a single customer
@@ -55,12 +56,16 @@ def get_customers(customer_id):
     """
     app.logger.info("Request for customer with id: %s", customer_id)
 
-    customer = customer.find(customer_id)
+    customer = Customer.find(customer_id)
     if not customer:
-        error(status.HTTP_404_NOT_FOUND, f"customer with id '{pet_id}' was not found.")
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"customer with id '{customer_id}' was not found.",
+        )
 
     app.logger.info("Returning customer: %s", customer.name)
     return jsonify(customer.serialize()), status.HTTP_200_OK
+
 
 ######################################################################
 # CREATE A NEW CUSTOMER
