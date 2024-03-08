@@ -87,6 +87,9 @@ class TestYourResourceService(TestCase):
     def test_delete_customer(self):
         """It should Delete a Customer"""
         test_customer = CustomerFactory()
+        # do a fake post
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        # delete the one we want
         response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(response.data), 0)
