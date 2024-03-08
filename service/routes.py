@@ -98,3 +98,23 @@ def error(status_code, reason):
     """Logs the error and then aborts"""
     app.logger.error(reason)
     abort(status_code, reason)
+
+
+######################################################################
+# DELETE A PET
+######################################################################
+@app.route("/customers/<int:customer_id>", methods=["DELETE"])
+def delete_customers(customer_id):
+    """
+    Delete a Customer
+
+    This endpoint will delete a Customer based the id specified in the path
+    """
+    app.logger.info("Request to delete customer with id: %d", customer_id)
+
+    customer = Customer.find(customer_id)
+    if customer:
+        customer.delete()
+
+    app.logger.info("Customer with ID: %d delete complete.", customer_id)
+    return "", status.HTTP_204_NO_CONTENT

@@ -83,3 +83,13 @@ class TestYourResourceService(TestCase):
         # self.assertEqual(new_customer["name"], test_customer.name)
         # self.assertEqual(new_customer["address"], test_customer.address)
         # self.assertEqual(new_customer["email"], test_customer.email)
+
+    def test_delete_customer(self):
+        """It should Delete a Customer"""
+        test_customer = CustomerFactory()
+        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        # make sure they are deleted
+        response = self.client.get(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
