@@ -48,6 +48,9 @@ def index():
 # READ A PET
 ######################################################################
 @app.route("/customers/<int:customer_id>", methods=["GET"])
+=======
+##########################################################################
+
 def get_customers(customer_id):
     """
     Retrieve a single customer
@@ -82,11 +85,9 @@ def create_customers():
 
     customer = Customer()
     customer.deserialize(request.get_json())
-    customer.create()
+    customer.create() \
     message = customer.serialize()
-    # Todo: uncomment this code when get_accounts is implemented
-    # location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-    location_url = "unknown"
+    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
 
     app.logger.info("Customer with ID: %d created.", customer.id)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
