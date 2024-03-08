@@ -28,7 +28,7 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
     address = db.Column(db.String(256))
-    email = db.Column(db.String(24))
+    email = db.Column(db.String(50))
 
     # Todo: Place the rest of your schema here...
 
@@ -54,6 +54,9 @@ class Customer(db.Model):
         Updates a Customer to the database
         """
         logger.info("Saving %s", self.name)
+        if self.id is None:
+            raise DataValidationError("Cannot update a customer without a valid id")
+
         try:
             db.session.commit()
         except Exception as e:
@@ -89,8 +92,16 @@ class Customer(db.Model):
             data (dict): A dictionary containing the resource data
         """
         try:
+            if not isinstance(data["name"], str):
+                raise DataValidationError("Invalid type for [name]: " + str(type(data["name"])))
             self.name = data["name"]
+
+            if not isinstance(data["address"], str):
+                raise DataValidationError("Invalid type for [address]: " + str(type(data["address"])))
             self.address = data["address"]
+
+            if not isinstance(data["email"], str):
+                raise DataValidationError("Invalid type for [email]: " + str(type(data["email"])))
             self.email = data["email"]
 
         except AttributeError as error:

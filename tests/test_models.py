@@ -76,6 +76,44 @@ class TestCustomer(TestCase):
         self.assertEqual(found_customer.address, customer.address)
         self.assertEqual(found_customer.email, customer.email)
 
+    def test_update_a_pet(self):
+        """It should Update a Customer"""
+        customer = CustomerFactory()
+        logging.debug(customer)
+        customer.id = None
+        customer.create()
+        logging.debug(customer)
+        self.assertIsNotNone(customer.id)
+        # Change it an save it
+        customer.name = "Billy the Kid"
+        original_id = customer.id
+        customer.update()
+        self.assertEqual(customer.id, original_id)
+        self.assertEqual(customer.name, "Billy the Kid")
+        # Fetch it back and make sure the id hasn't changed
+        # but the data did change
+        pets = Customer.all()
+        self.assertEqual(len(pets), 1)
+        self.assertEqual(pets[0].id, original_id)
+        self.assertEqual(pets[0].name, "Billy the Kid")
+
+
+    def test_update_no_id(self):
+        """It should not Update a Customer with no id"""
+        customer = CustomerFactory()
+        logging.debug(customer)
+        customer.id = None
+        self.assertRaises(DataValidationError, customer.update)
+
+    def test_delete_a_pet(self):
+        """It should Delete a Customer"""
+        customer = CustomerFactory()
+        customer.create()
+        self.assertEqual(len(Customer.all()), 1)
+        # delete the customer and make sure it isn't in the database
+        customer.delete()
+        self.assertEqual(len(Customer.all()), 0)
+
     def test_serialize_a_customer(self):
         """It should serialize a Customer"""
         customer = CustomerFactory()
@@ -102,4 +140,33 @@ class TestCustomer(TestCase):
         self.assertEqual(customer.address, data["address"])
         self.assertEqual(customer.email, data["email"])
 
-    # Todo: Add your test cases here...like update_customer, delete_customer
+    def test_deserialize_missing_data(self):
+        """It should not deserialize a Customer with missing data"""
+        data = {"id": 1, "name": "Billy the Kid", "email": "BillytheKid@gmail.com"}
+        customer = Customer()
+        self.assertRaises(DataValidationError, customer.deserialize, data)
+
+    def test_deserialize_bad_data(self):
+        """It should not deserialize bad data"""
+        data = "this is not a dictionary"
+        customer = Customer()
+        self.assertRaises(DataValidationError, customer.deserialize, data)
+
+    def test_deserialize_bad_available(self):
+        """It should not deserialize a bad available attribute"""
+        test_customer = CustomerFactory()
+        data = test_customer.serialize()
+        data["name"] = 45
+        customer = Customer()
+        self.assertRaises(DataValidationError, customer.deserialize, data)
+
+
+    # # ToDo deserialize tests for data types with restrictions
+    #def test_deserialize_bad_gender(self):
+    #    """It should not deserialize a bad gender attribute"""
+    #    test_pet = PetFactory()
+    #    data = test_pet.serialize()
+    #    data["gender"] = "male"  # wrong case
+    #    customer = Customer()
+    #    self.assertRaises(DataValidationError, customer.deserialize, data)
+

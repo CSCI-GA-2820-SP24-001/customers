@@ -33,6 +33,7 @@ from service.common import status  # HTTP Status Codes
 @app.route("/")
 def index():
     """Root URL response"""
+    app.logger.info("Request for Root URL")
     return (
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
@@ -44,9 +45,9 @@ def index():
 ######################################################################
 
 ######################################################################
-# READ A PET
+# READ A Customer
 ######################################################################
-@app.route("/pets/<int:pet_id>", methods=["GET"])
+@app.route("/customer/<int:customer_id>", methods=["GET"])
 def get_customers(customer_id):
     """
     Retrieve a single customer
@@ -57,7 +58,7 @@ def get_customers(customer_id):
 
     customer = customer.find(customer_id)
     if not customer:
-        error(status.HTTP_404_NOT_FOUND, f"customer with id '{pet_id}' was not found.")
+        error(status.HTTP_404_NOT_FOUND, f"customer with id '{customer_id}' was not found.")
 
     app.logger.info("Returning customer: %s", customer.name)
     return jsonify(customer.serialize()), status.HTTP_200_OK
@@ -79,12 +80,36 @@ def create_customers():
     customer.deserialize(request.get_json())
     customer.create()
     message = customer.serialize()
-    # Todo: uncomment this code when get_accounts is implemented
-    # location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-    location_url = "unknown"
+    location_url = url_for("get_customers", customer_id=customer.id, _external=True)
+
 
     app.logger.info("Customer with ID: %d created.", customer.id)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+
+
+######################################################################
+# UPDATE AN EXISTING Customer
+######################################################################
+@app.route("/customer/<int:customer_id>", methods=["PUT"])
+def update_customers(customer_id):
+    """
+    Update a Customer
+
+    This endpoint will update a Customer based the body that is posted
+    """
+    app.logger.info("Request to update customer with id: %d", customer_id)
+    check_content_type("application/json")
+
+    customer = Customer.find(customer_id)
+    if not customer:
+        error(status.HTTP_404_NOT_FOUND, f"Customer with id: '{customer_id}' was not found.")
+
+    customer.deserialize(request.get_json())
+    customer.id = customer_id
+    customer.update()
+
+    app.logger.info("Customer with ID: %d updated.", customer.id)
+    return jsonify(customer.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
