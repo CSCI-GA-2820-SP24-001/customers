@@ -5,6 +5,7 @@ Test cases for Customer Model
 import os
 import logging
 from unittest import TestCase
+from unittest.mock import patch
 from wsgi import app
 from service.models import Customer, DataValidationError, db
 from .factories import CustomerFactory
@@ -76,7 +77,7 @@ class TestCustomer(TestCase):
         self.assertEqual(found_customer.address, customer.address)
         self.assertEqual(found_customer.email, customer.email)
 
-    def test_update_a_pet(self):
+    def test_update_a_customer(self):
         """It should Update a Customer"""
         customer = CustomerFactory()
         logging.debug(customer)
@@ -92,10 +93,10 @@ class TestCustomer(TestCase):
         self.assertEqual(customer.name, "Billy the Kid")
         # Fetch it back and make sure the id hasn't changed
         # but the data did change
-        pets = Customer.all()
-        self.assertEqual(len(pets), 1)
-        self.assertEqual(pets[0].id, original_id)
-        self.assertEqual(pets[0].name, "Billy the Kid")
+        customers = Customer.all()
+        self.assertEqual(len(customers), 1)
+        self.assertEqual(customers[0].id, original_id)
+        self.assertEqual(customers[0].name, "Billy the Kid")
 
 
     def test_update_no_id(self):
@@ -105,7 +106,7 @@ class TestCustomer(TestCase):
         customer.id = None
         self.assertRaises(DataValidationError, customer.update)
 
-    def test_delete_a_pet(self):
+    def test_delete_a_customer(self):
         """It should Delete a Customer"""
         customer = CustomerFactory()
         customer.create()
@@ -152,21 +153,89 @@ class TestCustomer(TestCase):
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
-    def test_deserialize_bad_available(self):
-        """It should not deserialize a bad available attribute"""
+    def test_deserialize_bad_name(self):
+        """It should not deserialize a bad name attribute"""
         test_customer = CustomerFactory()
         data = test_customer.serialize()
         data["name"] = 45
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
+    def test_deserialize_bad_name(self):
+        """It should not deserialize a bad name attribute"""
+        test_customer = CustomerFactory()
+        data = test_customer.serialize()
+        data["name"] = 45 #Is this actually testing the write things
+        customer = Customer()
+        self.assertRaises(DataValidationError, customer.deserialize, data)
+
+######################################################################
+#  T E S T   E X C E P T I O N   H A N D L E R S
+######################################################################
+class TestExceptionHandlers(TestCustomer):
+    """Customer Model Exception Handlers"""
+
+    @patch("service.models.db.session.commit")
+    def test_create_exception(self, exception_mock):
+        """It should catch a create exception"""
+        exception_mock.side_effect = Exception()
+        customer = CustomerFactory()
+        self.assertRaises(DataValidationError, customer.create)
+
+    @patch("service.models.db.session.commit")
+    def test_update_exception(self, exception_mock):
+        """It should catch a update exception"""
+        exception_mock.side_effect = Exception()
+        customer = CustomerFactory()
+        self.assertRaises(DataValidationError, customer.update)
+
+    @patch("service.models.db.session.commit")
+    def test_delete_exception(self, exception_mock):
+        """It should catch a delete exception"""
+        exception_mock.side_effect = Exception()
+        customer = CustomerFactory()
+        self.assertRaises(DataValidationError, customer.delete)
+
+######################################################################
+#  Q U E R Y   T E S T   C A S E S
+######################################################################
+class TestModelQueries(TestCustomer):
+    """Customer Model Query Tests"""
+    
+    def test_find_customer(self):
+        """It should Find a Customer by ID"""
+        customers = CustomerFactory.create_batch(5)
+        for customer in customers:
+            customer.create()
+        logging.debug(customers)
+        # make sure they got saved
+        self.assertEqual(len(Customer.all()), 5)
+        # find the 2nd customer in the list
+        customer = Customer.find(customers[1].id)
+        self.assertIsNot(customer, None)
+        self.assertEqual(customer.id, customers[1].id)
+        self.assertEqual(customer.name, customers[1].name)
+        self.assertEqual(customer.email, customers[1].email)
+        self.assertEqual(customer.address, customers[1].address)
+
+    def test_find_by_name(self):
+        """It should Find a Customer by Name"""
+        customers = CustomerFactory.create_batch(10)
+        for customer in customers:
+            customer.create()
+        name = customers[0].name
+        count = len([customer for customer in customers if customer.name == name])
+        found = Customer.find_by_name(name)
+        self.assertEqual(found.count(), count)
+        for customer in found:
+            self.assertEqual(customer.name, name)
 
     # # ToDo deserialize tests for data types with restrictions
-    #def test_deserialize_bad_gender(self):
-    #    """It should not deserialize a bad gender attribute"""
-    #    test_pet = PetFactory()
-    #    data = test_pet.serialize()
-    #    data["gender"] = "male"  # wrong case
+    #def test_deserialize_bad_address(self): if that is right, there is a rigidness to the example data types
+    #    """It should not deserialize a bad address attribute"""
+    #    test_customer = CustomerFactory()
+    #    data = test_customer.serialize()
+    #    data["address"] = "male"  # wrong case
     #    customer = Customer()
     #    self.assertRaises(DataValidationError, customer.deserialize, data)
 

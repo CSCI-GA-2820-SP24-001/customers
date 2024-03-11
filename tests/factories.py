@@ -4,6 +4,7 @@ Test Factory to make fake objects for testing
 
 import factory
 from service.models import Customer
+from factory.fuzzy import FuzzyChoice, FuzzyDate
 
 
 class CustomerFactory(factory.Factory):
