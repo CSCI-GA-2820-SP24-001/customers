@@ -44,10 +44,12 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
+
 ######################################################################
 # READ A Customer
 ######################################################################
-@app.route("/customer/<int:customer_id>", methods=["GET"])
+
+@app.route("/customers/<int:customer_id>", methods=["GET"])
 def get_customers(customer_id):
     """
     Retrieve a single customer
@@ -56,12 +58,16 @@ def get_customers(customer_id):
     """
     app.logger.info("Request for customer with id: %s", customer_id)
 
-    customer = customer.find(customer_id)
+    customer = Customer.find(customer_id)
     if not customer:
-        error(status.HTTP_404_NOT_FOUND, f"customer with id '{customer_id}' was not found.")
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"customer with id '{customer_id}' was not found.",
+        )
 
     app.logger.info("Returning customer: %s", customer.name)
     return jsonify(customer.serialize()), status.HTTP_200_OK
+
 
 ######################################################################
 # CREATE A NEW CUSTOMER
@@ -78,11 +84,10 @@ def create_customers():
 
     customer = Customer()
     customer.deserialize(request.get_json())
-    customer.create()
+    customer.create() \
     message = customer.serialize()
     location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-
-
+    
     app.logger.info("Customer with ID: %d created.", customer.id)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
@@ -141,3 +146,23 @@ def error(status_code, reason):
     """Logs the error and then aborts"""
     app.logger.error(reason)
     abort(status_code, reason)
+
+
+######################################################################
+# DELETE A PET
+######################################################################
+@app.route("/customers/<int:customer_id>", methods=["DELETE"])
+def delete_customers(customer_id):
+    """
+    Delete a Customer
+
+    This endpoint will delete a Customer based the id specified in the path
+    """
+    app.logger.info("Request to delete customer with id: %d", customer_id)
+
+    customer = Customer.find(customer_id)
+    if customer:
+        customer.delete()
+
+    app.logger.info("Customer with ID: %d delete complete.", customer_id)
+    return "", status.HTTP_204_NO_CONTENT
