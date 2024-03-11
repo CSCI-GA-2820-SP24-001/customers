@@ -58,6 +58,14 @@ class TestYourResourceService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+    def test_health(self):
+        """It should be healthy"""
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["status"], 200)
+        self.assertEqual(data["message"], "Healthy")
+
     def test_create_customer(self):
         """It should Create a new Customer"""
         test_customer = CustomerFactory()
@@ -131,8 +139,8 @@ class TestSadPaths(TestCase):
         response = self.client.post(BASE_URL, data="hello", content_type="text/html")
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
-    def test_create_customer_bad_available(self):
-        """It should not Create a Customer with bad available data"""
+    def test_create_customer_bad_name(self):
+        """It should not Create a Customer with bad name data"""
         test_customer = CustomerFactory()
         logging.debug(test_customer)
         # change name to a number
@@ -140,6 +148,31 @@ class TestSadPaths(TestCase):
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_customer_bad_email(self):
+        """It should not Create a Customer with bad eamil data"""
+        test_customer = CustomerFactory()
+        logging.debug(test_customer)
+        # change email to a number
+        test_customer.email = 34
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_customer_bad_address(self):
+        """It should not Create a Customer with bad address data"""
+        test_customer = CustomerFactory()
+        logging.debug(test_customer)
+        # change address to a number
+        test_customer.address= 34
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+#def test_update_customer_not_found(self):
+#    """It should return 404 Not Found when updating a non-existing customer"""
+#    non_existing_id = 999  # Assumed to be a non-existing customer ID
+#    update_data = {
+#        "name": "Updated Name",
+#        "email": "Updated Info"
+#    }
 
     # # todo add more sad paths for each data type that has restrictions
     #def test_create_pet_bad_gender(self):
