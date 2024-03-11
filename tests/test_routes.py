@@ -95,7 +95,7 @@ class TestYourResourceService(TestCase):
         new_customer = response.get_json()
         logging.debug(new_customer)
         new_customer["name"] = "unknown"
-        response = self.client.put(f"{BASE_URL}/{new_pet['id']}", json=new_pet)
+        response = self.client.put(f"{BASE_URL}/{new_customer['id']}", json=new_customer)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_customer = response.get_json()
         self.assertEqual(updated_customer["name"], "unknown")
@@ -135,8 +135,8 @@ class TestSadPaths(TestCase):
         """It should not Create a Customer with bad available data"""
         test_customer = CustomerFactory()
         logging.debug(test_customer)
-        # change available to a string
-        test_customer.available = "true"
+        # change name to a number
+        test_customer.name = 34
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -151,7 +151,6 @@ class TestSadPaths(TestCase):
     #    test_pet["gender"] = "male"  # wrong case
     #    response = self.client.post(BASE_URL, json=test_pet)
     #    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-=======
         # Todo: Uncomment this code when get_customers is implemented
         # # Check that the location header was correct
         # response = self.client.get(location)
