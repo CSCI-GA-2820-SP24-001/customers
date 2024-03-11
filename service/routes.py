@@ -125,7 +125,7 @@ def update_customers(customer_id):
     return jsonify(customer.serialize()), status.HTTP_200_OK
 
 ######################################################################
-# DELETE A PET
+# DELETE A CUSTOMER
 ######################################################################
 @app.route("/customers/<int:customer_id>", methods=["DELETE"])
 def delete_customers(customer_id):
