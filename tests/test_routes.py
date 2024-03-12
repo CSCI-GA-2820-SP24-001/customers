@@ -49,6 +49,22 @@ class TestYourResourceService(TestCase):
         """This runs after each test"""
         db.session.remove()
 
+    def _create_customers(self, count):
+        """Factory method to create customers in bulk"""
+        customers = []
+        for _ in range(count):
+            test_customer = CustomerFactory()
+            response = self.client.post(BASE_URL, json=test_customer.serialize())
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test customer",
+            )
+            new_customer = response.get_json()
+            test_customer.id = new_customer["id"]
+            customers.append(test_customer)
+        return customers
+
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
     ######################################################################
@@ -83,7 +99,6 @@ class TestYourResourceService(TestCase):
         self.assertEqual(new_customer["address"], test_customer.address)
         self.assertEqual(new_customer["email"], test_customer.email)
 
-
         # Check that the location header was correct
         response = self.client.get(location)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,10 +118,20 @@ class TestYourResourceService(TestCase):
         new_customer = response.get_json()
         logging.debug(new_customer)
         new_customer["name"] = "unknown"
-        response = self.client.put(f"{BASE_URL}/{new_customer['id']}", json=new_customer)
+        response = self.client.put(
+            f"{BASE_URL}/{new_customer['id']}", json=new_customer
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_customer = response.get_json()
         self.assertEqual(updated_customer["name"], "unknown")
+
+    def test_get_customer_list(self):
+        """It should Get a list of Customers"""
+        self._create_customers(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
 
 
 ######################################################################
@@ -129,7 +154,7 @@ class TestSadPaths(TestCase):
         response = self.client.post(BASE_URL, json={})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_pet_no_content_type(self):
+    def test_create_customer_no_content_type(self):
         """It should not Create a Customer with no content type"""
         response = self.client.post(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
@@ -162,36 +187,37 @@ class TestSadPaths(TestCase):
         test_customer = CustomerFactory()
         logging.debug(test_customer)
         # change address to a number
-        test_customer.address= 34
+        test_customer.address = 34
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-#def test_update_customer_not_found(self):
-#    """It should return 404 Not Found when updating a non-existing customer"""
-#    non_existing_id = 999  # Assumed to be a non-existing customer ID
-#    update_data = {
-#        "name": "Updated Name",
-#        "email": "Updated Info"
-#    }
+    # def test_update_customer_not_found(self):
+    #    """It should return 404 Not Found when updating a non-existing customer"""
+    #    non_existing_id = 999  # Assumed to be a non-existing customer ID
+    #    update_data = {
+    #        "name": "Updated Name",
+    #        "email": "Updated Info"
+    #    }
 
     # # todo add more sad paths for each data type that has restrictions
-    #def test_create_pet_bad_gender(self):
-    #    """It should not Create a Pet with bad gender data"""
-    #    pet = PetFactory()
-    #    logging.debug(pet)
+    # def test_create_customer_bad_gender(self):
+    #    """It should not Create a Customer with bad gender data"""
+    #    customer = CustomerFactory()
+    #    logging.debug(customer)
     #    # change gender to a bad string
-    #    test_pet = pet.serialize()
-    #    test_pet["gender"] = "male"  # wrong case
-    #    response = self.client.post(BASE_URL, json=test_pet)
+    #    test_customer = customer.serialize()
+    #    test_customer["gender"] = "male"  # wrong case
+    #    response = self.client.post(BASE_URL, json=test_customer)
     #    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # Todo: Uncomment this code when get_customers is implemented
-        # # Check that the location header was correct
-        # response = self.client.get(location)
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # new_customer = response.get_json()
-        # self.assertEqual(new_customer["name"], test_customer.name)
-        # self.assertEqual(new_customer["address"], test_customer.address)
-        # self.assertEqual(new_customer["email"], test_customer.email)
+
+    # Todo: Uncomment this code when get_customers is implemented
+    # # Check that the location header was correct
+    # response = self.client.get(location)
+    # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    # new_customer = response.get_json()
+    # self.assertEqual(new_customer["name"], test_customer.name)
+    # self.assertEqual(new_customer["address"], test_customer.address)
+    # self.assertEqual(new_customer["email"], test_customer.email)
 
     def test_delete_customer(self):
         """It should Delete a Customer"""

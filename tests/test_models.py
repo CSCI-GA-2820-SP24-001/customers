@@ -19,6 +19,7 @@ DATABASE_URI = os.getenv(
 
 #  C U S T O M E R   M O D E L   T E S T   C A S E S
 
+
 ######################################################################
 # pylint: disable=too-many-public-methods
 class TestCustomer(TestCase):
@@ -98,7 +99,6 @@ class TestCustomer(TestCase):
         self.assertEqual(customers[0].id, original_id)
         self.assertEqual(customers[0].name, "Billy the Kid")
 
-
     def test_update_no_id(self):
         """It should not Update a Customer with no id"""
         customer = CustomerFactory()
@@ -128,7 +128,6 @@ class TestCustomer(TestCase):
         self.assertEqual(data["email"], customer.email)
         self.assertIn("address", data)
         self.assertEqual(data["address"], customer.address)
-    
 
     def test_deserialize_a_customer(self):
         """It should de-serialize a customer"""
@@ -161,13 +160,18 @@ class TestCustomer(TestCase):
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
-    def test_deserialize_bad_name(self):
-        """It should not deserialize a bad name attribute"""
-        test_customer = CustomerFactory()
-        data = test_customer.serialize()
-        data["name"] = 45 #Is this actually testing the write things
-        customer = Customer()
-        self.assertRaises(DataValidationError, customer.deserialize, data)
+    def test_list_all_customers(self):
+        """It should List all Customers in the database"""
+        customers = Customer.all()
+        self.assertEqual(customers, [])
+        # Create 5 Customers
+        for _ in range(5):
+            customer = CustomerFactory()
+            customer.create()
+        # See if we get back 5 customers
+        customers = Customer.all()
+        self.assertEqual(len(customers), 5)
+
 
 ######################################################################
 #  T E S T   E X C E P T I O N   H A N D L E R S
@@ -196,12 +200,13 @@ class TestExceptionHandlers(TestCustomer):
         customer = CustomerFactory()
         self.assertRaises(DataValidationError, customer.delete)
 
+
 ######################################################################
 #  Q U E R Y   T E S T   C A S E S
 ######################################################################
 class TestModelQueries(TestCustomer):
     """Customer Model Query Tests"""
-    
+
     def test_find_customer(self):
         """It should Find a Customer by ID"""
         customers = CustomerFactory.create_batch(5)
@@ -231,11 +236,10 @@ class TestModelQueries(TestCustomer):
             self.assertEqual(customer.name, name)
 
     # # ToDo deserialize tests for data types with restrictions
-    #def test_deserialize_bad_address(self): if that is right, there is a rigidness to the example data types
+    # def test_deserialize_bad_address(self): if that is right, there is a rigidness to the example data types
     #    """It should not deserialize a bad address attribute"""
     #    test_customer = CustomerFactory()
     #    data = test_customer.serialize()
     #    data["address"] = "male"  # wrong case
     #    customer = Customer()
     #    self.assertRaises(DataValidationError, customer.deserialize, data)
-

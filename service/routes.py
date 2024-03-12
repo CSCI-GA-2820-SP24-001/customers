@@ -26,6 +26,7 @@ from flask import current_app as app  # Import Flask application
 from service.models import Customer
 from service.common import status  # HTTP Status Codes
 
+
 ######################################################################
 # GET HEALTH CHECK
 ######################################################################
@@ -56,6 +57,7 @@ def index():
 ######################################################################
 # READ A Customer
 ######################################################################
+
 
 @app.route("/customers/<int:customer_id>", methods=["GET"])
 def get_customers(customer_id):
@@ -92,10 +94,10 @@ def create_customers():
 
     customer = Customer()
     customer.deserialize(request.get_json())
-    customer.create() 
+    customer.create()
     message = customer.serialize()
     location_url = url_for("get_customers", customer_id=customer.id, _external=True)
-    
+
     app.logger.info("Customer with ID: %d created.", customer.id)
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
@@ -115,7 +117,10 @@ def update_customers(customer_id):
 
     customer = Customer.find(customer_id)
     if not customer:
-        error(status.HTTP_404_NOT_FOUND, f"Customer with id: '{customer_id}' was not found.")
+        error(
+            status.HTTP_404_NOT_FOUND,
+            f"Customer with id: '{customer_id}' was not found.",
+        )
 
     customer.deserialize(request.get_json())
     customer.id = customer_id
@@ -123,6 +128,7 @@ def update_customers(customer_id):
 
     app.logger.info("Customer with ID: %d updated.", customer.id)
     return jsonify(customer.serialize()), status.HTTP_200_OK
+
 
 ######################################################################
 # DELETE A CUSTOMER
@@ -142,6 +148,32 @@ def delete_customers(customer_id):
 
     app.logger.info("Customer with ID: %d delete complete.", customer_id)
     return "", status.HTTP_204_NO_CONTENT
+
+
+######################################################################
+# LIST ALL CUSTOMERS
+######################################################################
+@app.route("/customers", methods=["GET"])
+def list_customers():
+    """Returns all of the Customers"""
+    app.logger.info("Request for customer list")
+
+    customers = []
+
+    # See if any query filters were passed in
+    category = request.args.get("category")
+    name = request.args.get("name")
+    if category:
+        customers = Customer.find_by_category(category)
+    elif name:
+        customers = Customer.find_by_name(name)
+    else:
+        customers = Customer.all()
+
+    results = [customer.serialize() for customer in customers]
+    app.logger.info("Returning %d customers", len(results))
+    return jsonify(results), status.HTTP_200_OK
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
