@@ -98,6 +98,7 @@ class TestYourResourceService(TestCase):
         self.assertEqual(new_customer["name"], test_customer.name)
         self.assertEqual(new_customer["address"], test_customer.address)
         self.assertEqual(new_customer["email"], test_customer.email)
+        self.assertEqual(new_customer["phonenumber"], test_customer.phonenumber)
 
         # Check that the location header was correct
         response = self.client.get(location)
@@ -106,6 +107,7 @@ class TestYourResourceService(TestCase):
         self.assertEqual(new_customer["name"], test_customer.name)
         self.assertEqual(new_customer["address"], test_customer.address)
         self.assertEqual(new_customer["email"], test_customer.email)
+        self.assertEqual(new_customer["phonenumber"], test_customer.phonenumber)
 
     def test_update_customer(self):
         """It should Update an existing customer"""
@@ -190,34 +192,23 @@ class TestSadPaths(TestCase):
         test_customer.address = 34
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    # def test_update_customer_not_found(self):
-    #    """It should return 404 Not Found when updating a non-existing customer"""
-    #    non_existing_id = 999  # Assumed to be a non-existing customer ID
-    #    update_data = {
-    #        "name": "Updated Name",
-    #        "email": "Updated Info"
-    #    }
-
-    # # todo add more sad paths for each data type that has restrictions
-    # def test_create_customer_bad_gender(self):
-    #    """It should not Create a Customer with bad gender data"""
-    #    customer = CustomerFactory()
-    #    logging.debug(customer)
-    #    # change gender to a bad string
-    #    test_customer = customer.serialize()
-    #    test_customer["gender"] = "male"  # wrong case
-    #    response = self.client.post(BASE_URL, json=test_customer)
-    #    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    # Todo: Uncomment this code when get_customers is implemented
-    # # Check that the location header was correct
-    # response = self.client.get(location)
-    # self.assertEqual(response.status_code, status.HTTP_200_OK)
-    # new_customer = response.get_json()
-    # self.assertEqual(new_customer["name"], test_customer.name)
-    # self.assertEqual(new_customer["address"], test_customer.address)
-    # self.assertEqual(new_customer["email"], test_customer.email)
+    
+    def test_create_customer_bad_phonenumber(self):
+        """It should not Create a Customer with bad phonenumber data"""
+        test_customer = CustomerFactory()
+        logging.debug(test_customer)
+        # change phonenumber to a number instead of a string
+        test_customer.phone_number = 34
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_get_customer_not_found(self):
+        """It should not Get a Pet thats not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
 
     def test_delete_customer(self):
         """It should Delete a Customer"""
