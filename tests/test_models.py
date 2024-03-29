@@ -63,6 +63,7 @@ class TestCustomer(TestCase):
         self.assertEqual(data.name, customer.name)
         self.assertEqual(data.address, customer.address)
         self.assertEqual(data.email, customer.email)
+        self.assertEqual(data.phonenumber, customer.phonenumber)
 
     def test_read_a_customer(self):
         """It should Read a customer"""
@@ -77,6 +78,7 @@ class TestCustomer(TestCase):
         self.assertEqual(found_customer.name, customer.name)
         self.assertEqual(found_customer.address, customer.address)
         self.assertEqual(found_customer.email, customer.email)
+        self.assertEqual(found_customer.phonenumber, customer.phonenumber)
 
     def test_update_a_customer(self):
         """It should Update a Customer"""
@@ -128,6 +130,8 @@ class TestCustomer(TestCase):
         self.assertEqual(data["email"], customer.email)
         self.assertIn("address", data)
         self.assertEqual(data["address"], customer.address)
+        self.assertIn("phonenumber", data)
+        self.assertEqual(data["phonenumber"], customer.phonenumber)
 
     def test_deserialize_a_customer(self):
         """It should de-serialize a customer"""
@@ -139,10 +143,11 @@ class TestCustomer(TestCase):
         self.assertEqual(customer.name, data["name"])
         self.assertEqual(customer.address, data["address"])
         self.assertEqual(customer.email, data["email"])
+        self.assertEqual(customer.phonenumber, data["phonenumber"])
 
     def test_deserialize_missing_data(self):
         """It should not deserialize a Customer with missing data"""
-        data = {"id": 1, "name": "Billy the Kid", "email": "BillytheKid@gmail.com"}
+        data = {"id": 1, "name": "Billy the Kid", "email": "BillytheKid@gmail.com"} #phonenumber and adress are missing
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
@@ -220,8 +225,9 @@ class TestModelQueries(TestCustomer):
         self.assertIsNot(customer, None)
         self.assertEqual(customer.id, customers[1].id)
         self.assertEqual(customer.name, customers[1].name)
-        self.assertEqual(customer.email, customers[1].email)
         self.assertEqual(customer.address, customers[1].address)
+        self.assertEqual(customer.email, customers[1].email)
+        self.assertEqual(customer.phonenumber, customers[1].phonenumber)
 
     def test_find_by_name(self):
         """It should Find a Customer by Name"""

@@ -29,6 +29,7 @@ class Customer(db.Model):
     name = db.Column(db.String(63))
     address = db.Column(db.String(256))
     email = db.Column(db.String(50))
+    phonenumber = db.Column(db.String(10))
 
     # Todo: Place the rest of your schema here...
 
@@ -82,6 +83,7 @@ class Customer(db.Model):
             "name": self.name,
             "address": self.address,
             "email": self.email,
+            "phonenumber" : self.phonenumber
         }
 
     def deserialize(self, data):
@@ -103,6 +105,10 @@ class Customer(db.Model):
             if not isinstance(data["email"], str):
                 raise DataValidationError("Invalid type for [email]: " + str(type(data["email"])))
             self.email = data["email"]
+
+            if not isinstance(data["phonenumber"], str):
+                raise DataValidationError("Invalid type for [phonenumber]: " + str(type(data["phonenumber"])))
+            self.phonenumber = data["phonenumber"]
 
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
