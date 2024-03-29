@@ -10,6 +10,10 @@ from service.common import status
 from service.models import db, Customer
 from .factories import CustomerFactory
 
+# from unittest.mock import MagicMock, patch
+from urllib.parse import quote_plus
+from wsgi import app
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
@@ -135,6 +139,32 @@ class TestYourResourceService(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
+    def test_delete_customer(self):
+        """It should Delete a Customer"""
+        test_customer = CustomerFactory()
+        # do a fake post
+        response = self.client.post(BASE_URL, json=test_customer.serialize())
+        # delete the one we want
+        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        response = self.client.get(f"{BASE_URL}/{test_customer.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_query_customer_list_by_name(self):
+        """It should Query customers by name"""
+        customers = self._create_customers(10)
+        test_name = customers[0].name
+        name_customers = [customer for customer in customers if customer.name == test_name]
+        response = self.client.get(
+            BASE_URL, query_string=f"name={quote_plus(test_name)}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(name_customers))
+        # check the data just to be sure
+        for customer in data:
+            self.assertEqual(customer["name"], test_name)
 
 ######################################################################
 #  T E S T   S A D   P A T H S
@@ -210,14 +240,3 @@ class TestSadPaths(TestCase):
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
 
-    def test_delete_customer(self):
-        """It should Delete a Customer"""
-        test_customer = CustomerFactory()
-        # do a fake post
-        response = self.client.post(BASE_URL, json=test_customer.serialize())
-        # delete the one we want
-        response = self.client.delete(f"{BASE_URL}/{test_customer.id}")
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(response.data), 0)
-        response = self.client.get(f"{BASE_URL}/{test_customer.id}")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
