@@ -161,12 +161,18 @@ def list_customers():
     customers = []
 
     # See if any query filters were passed in
-    category = request.args.get("category")
+    address = request.args.get("address")
     name = request.args.get("name")
-    if category:
-        customers = Customer.find_by_category(category)
+    email = request.args.get("email")
+    phonenumber = request.args.get("phonenumber")
+    if address:
+        customers = Customer.find_by_address(address)
     elif name:
         customers = Customer.find_by_name(name)
+    elif email:
+        customers = Customer.find_by_email(email)
+    elif phonenumber:
+        customers = Customer.find_by_phonenumber(phonenumber)
     else:
         customers = Customer.all()
 

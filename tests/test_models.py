@@ -234,12 +234,39 @@ class TestModelQueries(TestCustomer):
         self.assertEqual(found.count(), count)
         for customer in found:
             self.assertEqual(customer.name, name)
+    
+    def test_find_by_address(self):
+        """It should Find a Customer by address"""
+        customers = CustomerFactory.create_batch(10)
+        for customer in customers:
+            customer.create()
+        address = customers[0].address
+        count = len([customer for customer in customers if customer.address == address])
+        found = Customer.find_by_address(address)
+        self.assertEqual(found.count(), count)
+        for customer in found:
+            self.assertEqual(customer.address, address)
 
-    # # ToDo deserialize tests for data types with restrictions
-    # def test_deserialize_bad_address(self): if that is right, there is a rigidness to the example data types
-    #    """It should not deserialize a bad address attribute"""
-    #    test_customer = CustomerFactory()
-    #    data = test_customer.serialize()
-    #    data["address"] = "male"  # wrong case
-    #    customer = Customer()
-    #    self.assertRaises(DataValidationError, customer.deserialize, data)
+    def test_find_by_email(self):
+        """It should Find a Customer by email"""
+        customers = CustomerFactory.create_batch(10)
+        for customer in customers:
+            customer.create()
+        email = customers[0].email
+        count = len([customer for customer in customers if customer.email == email])
+        found = Customer.find_by_email(email)
+        self.assertEqual(found.count(), count)
+        for customer in found:
+            self.assertEqual(customer.email, email)
+
+    def test_find_by_phonenumber(self):
+        """It should Find a Customer by Phonenumber"""
+        customers = CustomerFactory.create_batch(10)
+        for customer in customers:
+            customer.create()
+        phonenumber = customers[0].phonenumber
+        count = len([customer for customer in customers if customer.phonenumber == phonenumber])
+        found = Customer.find_by_phonenumber(phonenumber)
+        self.assertEqual(found.count(), count)
+        for customer in found:
+            self.assertEqual(customer.phonenumber, phonenumber)
