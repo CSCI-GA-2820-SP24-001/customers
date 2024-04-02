@@ -147,7 +147,11 @@ class TestCustomer(TestCase):
 
     def test_deserialize_missing_data(self):
         """It should not deserialize a Customer with missing data"""
-        data = {"id": 1, "name": "Billy the Kid", "email": "BillytheKid@gmail.com"} #phonenumber and adress are missing
+        data = {
+            "id": 1,
+            "name": "Billy the Kid",
+            "email": "BillytheKid@gmail.com",
+        }  # phonenumber and adress are missing
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
@@ -240,7 +244,7 @@ class TestModelQueries(TestCustomer):
         self.assertEqual(found.count(), count)
         for customer in found:
             self.assertEqual(customer.name, name)
-    
+
     def test_find_by_address(self):
         """It should Find a Customer by address"""
         customers = CustomerFactory.create_batch(10)
@@ -271,7 +275,9 @@ class TestModelQueries(TestCustomer):
         for customer in customers:
             customer.create()
         phonenumber = customers[0].phonenumber
-        count = len([customer for customer in customers if customer.phonenumber == phonenumber])
+        count = len(
+            [customer for customer in customers if customer.phonenumber == phonenumber]
+        )
         found = Customer.find_by_phonenumber(phonenumber)
         self.assertEqual(found.count(), count)
         for customer in found:
