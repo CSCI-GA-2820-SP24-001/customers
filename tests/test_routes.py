@@ -228,7 +228,7 @@ class TestSadPaths(TestCase):
         test_customer = CustomerFactory()
         logging.debug(test_customer)
         # change phonenumber to a number instead of a string
-        test_customer.phone_number = 34
+        test_customer.phonenumber = 34
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
