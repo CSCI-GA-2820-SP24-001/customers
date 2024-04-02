@@ -29,7 +29,7 @@ class Customer(db.Model):
     name = db.Column(db.String(63))
     address = db.Column(db.String(256))
     email = db.Column(db.String(50))
-    phonenumber = db.Column(db.String(10))
+    phonenumber = db.Column(db.String(25))
 
     def __repr__(self):
         return f"<Customer {self.name} id=[{self.id}]>"
@@ -81,7 +81,7 @@ class Customer(db.Model):
             "name": self.name,
             "address": self.address,
             "email": self.email,
-            "phonenumber" : self.phonenumber
+            "phonenumber": self.phonenumber,
         }
 
     def deserialize(self, data):
@@ -146,7 +146,7 @@ class Customer(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
-    
+
     @classmethod
     def find_by_address(cls, address):
         """Returns all Customers with the given address
@@ -156,7 +156,7 @@ class Customer(db.Model):
         """
         logger.info("Processing address query for %s ...", address)
         return cls.query.filter(cls.address == address)
-    
+
     @classmethod
     def find_by_email(cls, email):
         """Returns all Customers with the given email

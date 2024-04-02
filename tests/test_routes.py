@@ -11,10 +11,6 @@ from service.common import status
 from service.models import db, Customer
 from .factories import CustomerFactory
 
-# from unittest.mock import MagicMock, patch
-
-
-
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql+psycopg://postgres:postgres@localhost:5432/testdb"
 )
@@ -155,7 +151,9 @@ class TestYourResourceService(TestCase):
         """It should Query customers by name"""
         customers = self._create_customers(10)
         test_name = customers[0].name
-        name_customers = [customer for customer in customers if customer.name == test_name]
+        name_customers = [
+            customer for customer in customers if customer.name == test_name
+        ]
         response = self.client.get(
             BASE_URL, query_string=f"name={quote_plus(test_name)}"
         )
@@ -165,6 +163,7 @@ class TestYourResourceService(TestCase):
         # check the data just to be sure
         for customer in data:
             self.assertEqual(customer["name"], test_name)
+
 
 ######################################################################
 #  T E S T   S A D   P A T H S
@@ -222,16 +221,16 @@ class TestSadPaths(TestCase):
         test_customer.address = 34
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_create_customer_bad_phonenumber(self):
         """It should not Create a Customer with bad phonenumber data"""
         test_customer = CustomerFactory()
         logging.debug(test_customer)
         # change phonenumber to a number instead of a string
-        test_customer.phone_number = 34
+        test_customer.phonenumber = 34
         response = self.client.post(BASE_URL, json=test_customer.serialize())
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_get_customer_not_found(self):
         """It should not Get a Pet thats not found"""
         response = self.client.get(f"{BASE_URL}/0")
@@ -239,4 +238,3 @@ class TestSadPaths(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
-
