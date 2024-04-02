@@ -25,6 +25,7 @@ DATABASE_URI = os.getenv(
 class TestCustomer(TestCase):
     """Test Cases for Customer Model"""
 
+    # pylint: disable=duplicate-code
     @classmethod
     def setUpClass(cls):
         """This runs once before the entire test suite"""
@@ -151,7 +152,7 @@ class TestCustomer(TestCase):
             "id": 1,
             "name": "Billy the Kid",
             "email": "BillytheKid@gmail.com",
-        }  # phonenumber and adress are missing
+        }  # phonenumber and address are missing
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
