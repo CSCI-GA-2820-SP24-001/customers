@@ -6,13 +6,13 @@ import os
 import logging
 from unittest import TestCase
 from wsgi import app
+from urllib.parse import quote_plus
 from service.common import status
 from service.models import db, Customer
 from .factories import CustomerFactory
 
 # from unittest.mock import MagicMock, patch
-from urllib.parse import quote_plus
-from wsgi import app
+
 
 
 DATABASE_URI = os.getenv(
