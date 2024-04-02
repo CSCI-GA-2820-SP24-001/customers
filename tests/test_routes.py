@@ -24,6 +24,7 @@ BASE_URL = "/customers"
 class TestYourResourceService(TestCase):
     """REST API Server Tests"""
 
+    # pylint: disable=duplicate-code
     @classmethod
     def setUpClass(cls):
         """Run once before all tests"""
