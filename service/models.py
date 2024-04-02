@@ -168,7 +168,7 @@ class Customer(db.Model):
         """
         logger.info("Processing email query for %s ...", email)
         return cls.query.filter(cls.email == email)
-    
+
     @classmethod
     def find_by_phonenumber(cls, phonenumber):
         """Returns all Customers with the given phonenumber
