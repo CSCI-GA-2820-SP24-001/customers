@@ -29,7 +29,7 @@ class Customer(db.Model):
     name = db.Column(db.String(63))
     address = db.Column(db.String(256))
     email = db.Column(db.String(50))
-    phonenumber = db.Column(db.String(10))
+    phonenumber = db.Column(db.String(25))
 
     # Todo: Place the rest of your schema here...
 
