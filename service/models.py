@@ -31,8 +31,6 @@ class Customer(db.Model):
     email = db.Column(db.String(50))
     phonenumber = db.Column(db.String(25))
 
-    # Todo: Place the rest of your schema here...
-
     def __repr__(self):
         return f"<Customer {self.name} id=[{self.id}]>"
 
@@ -168,7 +166,7 @@ class Customer(db.Model):
         """
         logger.info("Processing email query for %s ...", email)
         return cls.query.filter(cls.email == email)
-    
+
     @classmethod
     def find_by_phonenumber(cls, phonenumber):
         """Returns all Customers with the given phonenumber
