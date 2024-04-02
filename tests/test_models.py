@@ -151,7 +151,7 @@ class TestCustomer(TestCase):
             "id": 1,
             "name": "Billy the Kid",
             "email": "BillytheKid@gmail.com",
-        }  # phonenumber and adress are missing
+        }  # phonenumber and address are missing
         customer = Customer()
         self.assertRaises(DataValidationError, customer.deserialize, data)
 
