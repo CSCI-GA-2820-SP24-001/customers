@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
-        "sqlalchemy",
+        "hitcounter",
+        "Nzkv",
         "psycopg",
+        "sqlalchemy",
         "testdb"
     ]
 }

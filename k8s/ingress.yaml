@@ -2,6 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+
   name: ecommerce-site
 spec:
   rules:
@@ -36,3 +37,4 @@ spec:
             name: recommedations-service
             port:
               number: 5000
+

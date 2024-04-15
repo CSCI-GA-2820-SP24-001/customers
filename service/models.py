@@ -93,19 +93,27 @@ class Customer(db.Model):
         """
         try:
             if not isinstance(data["name"], str):
-                raise DataValidationError("Invalid type for [name]: " + str(type(data["name"])))
+                raise DataValidationError(
+                    "Invalid type for [name]: " + str(type(data["name"]))
+                )
             self.name = data["name"]
 
             if not isinstance(data["address"], str):
-                raise DataValidationError("Invalid type for [address]: " + str(type(data["address"])))
+                raise DataValidationError(
+                    "Invalid type for [address]: " + str(type(data["address"]))
+                )
             self.address = data["address"]
 
             if not isinstance(data["email"], str):
-                raise DataValidationError("Invalid type for [email]: " + str(type(data["email"])))
+                raise DataValidationError(
+                    "Invalid type for [email]: " + str(type(data["email"]))
+                )
             self.email = data["email"]
 
             if not isinstance(data["phonenumber"], str):
-                raise DataValidationError("Invalid type for [phonenumber]: " + str(type(data["phonenumber"])))
+                raise DataValidationError(
+                    "Invalid type for [phonenumber]: " + str(type(data["phonenumber"]))
+                )
             self.phonenumber = data["phonenumber"]
 
         except AttributeError as error:

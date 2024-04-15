@@ -6,6 +6,7 @@ spec:
   type: ClusterIP
   selector:
     app: customers
+
   ports:
     - name: http
       protocol: TCP
