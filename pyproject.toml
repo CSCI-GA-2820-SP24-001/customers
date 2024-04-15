@@ -31,9 +31,9 @@ httpie = "^3.2.2"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-#
+########################################
 # Tool configurations
-#
+########################################
 
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 127

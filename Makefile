@@ -48,6 +48,8 @@ run: ## Run the service
 	$(info Starting service...)
 	honcho start
 
+##@ Kubernetes
+
 .PHONY: cluster
 cluster: ## Create a K3D Kubernetes cluster with load balancer and registry
 	$(info Creating Kubernetes cluster with a registry and 1 node...)
@@ -62,3 +64,59 @@ cluster-rm: ## Remove a K3D Kubernetes cluster
 depoy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
 	kubectl apply -f k8s/
+
+.PHONY: tekton
+tekton: ## Install Tekton
+	$(info Installing Tekton in the Cluster...)
+	kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
+	kubectl apply --filename https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+	kubectl apply --filename https://storage.googleapis.com/tekton-releases/triggers/latest/interceptors.yaml
+	kubectl apply --filename https://storage.googleapis.com/tekton-releases/dashboard/latest/tekton-dashboard-release.yaml
+
+.PHONY: clustertasks
+clustertasks: ## Create Tekton Cluster Tasks
+	$(info Creating Tekton Cluster Tasks...)
+	wget -qO - https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client/0.2/openshift-client.yaml | sed 's/kind: Task/kind: ClusterTask/g' | kubectl create -f -
+	wget -qO - https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.4/buildah.yaml | sed 's/kind: Task/kind: ClusterTask/g' | kubectl create -f -
+
+.PHONY: knative
+knative: ## Install Knative
+	$(info Installing Knative in the Cluster...)
+	kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.8.3/serving-crds.yaml
+	kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.8.3/serving-core.yaml
+	kubectl apply -f https://github.com/knative/eventing/releases/download/knative-v1.8.5/eventing-crds.yaml
+	kubectl apply -f https://github.com/knative/eventing/releases/download/knative-v1.8.5/eventing-core.yaml
+
+.PHONY: deploy
+depoy: ## Deploy the service on local Kubernetes
+	$(info Deploying service locally...)
+	kubectl apply -f k8s/
+
+############################################################
+# COMMANDS FOR BUILDING THE IMAGE
+############################################################
+
+##@ Image Build
+
+.PHONY: init
+init: export DOCKER_BUILDKIT=1
+init:	## Creates the buildx instance
+	$(info Initializing Builder...)
+	-docker buildx create --use --name=qemu
+	docker buildx inspect --bootstrap
+
+.PHONY: build
+build:	## Build all of the project Docker images
+	$(info Building $(IMAGE) for $(PLATFORM)...)
+	docker build --rm --pull --tag $(IMAGE) .
+
+.PHONY: buildx
+buildx:	## Build multi-platform image with buildx
+	$(info Building multi-platform image $(IMAGE) for $(PLATFORM)...)
+	docker buildx build --file Dockerfile  --pull --platform=$(PLATFORM) --tag $(IMAGE) --push .
+
+.PHONY: remove
+remove:	## Stop and remove the buildx builder
+	$(info Stopping and removing the builder image...)
+	docker buildx stop
+	docker buildx rm

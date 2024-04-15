@@ -10,3 +10,4 @@ spec:
   hostPath:
     path: /data/pv0001
   storageClassName: "default"
+

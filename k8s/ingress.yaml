@@ -2,17 +2,39 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hitcounter
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+
+  name: ecommerce-site
 spec:
   rules:
-  - http:
+  - host: ecommerce.containers.mybluemix.net
+    http:
       paths:
-      - path: /
+      - path: /shopcarts
         pathType: Prefix
         backend:
           service:
-            name: hitcounter
+            name: shopcart-service
             port:
-              number: 8080
+              number: 5000
+      - path: /products
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-service
+            port:
+              number: 5000
+      - path: /orders
+        pathType: Prefix
+        backend:
+          service:
+            name: orders-service
+            port:
+              number: 5000
+      - path: /recommedations
+        pathType: Prefix
+        backend:
+          service:
+            name: recommedations-service
+            port:
+              number: 5000
+
