@@ -41,13 +41,8 @@ def health_check():
 ######################################################################
 @app.route("/")
 def index():
-    """Root URL response"""
-    app.logger.info("Request for Root URL")
-    return (
-        "Reminder: return some useful information in json format about the service here",
-        status.HTTP_200_OK,
-    )
-
+    """Base URL for our service"""
+    return app.send_static_file("index.html")
 
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
