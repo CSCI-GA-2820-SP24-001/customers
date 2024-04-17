@@ -2,47 +2,53 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis
+  name: postgres
   labels:
-    app: redis
+    app: postgres
 spec:
-  serviceName: "redis"
+  serviceName: "postgres"
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: postgres
   template:
     metadata:
       labels:
-        app: redis
+        app: postgres
     spec:
       containers:
-        - name: redis
-          image: "redis:6-alpine"
+        - name: postgres
+          image: postgres:alpine
           ports:
-            - containerPort: 6379
+            - containerPort: 5432
               protocol: TCP
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: password
           volumeMounts:
-          - name: redis-storage
-            mountPath: /data
+          - name: postgres-storage
+            mountPath: /var/lib/postgresql/data
           resources:
             limits:
               cpu: "0.50"
               memory: "128Mi"
             requests:
-              cpu: "0.25"        
+              cpu: "0.25"
               memory: "64Mi"
       volumes:
-      - name: redis-storage
+      - name: postgres-storage
         persistentVolumeClaim:
-          claimName: redis-data
+          claimName: postgres-pvc
         # emptyDir: {}
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: redis-data
+  name: postgres-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -55,13 +61,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: postgres
   labels:
-    app: redis
+    app: postgres
 spec:
-  ports:
-  - port: 6379
-    targetPort: 6379
+  type: ClusterIP
   selector:
-    app: redis
-
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
