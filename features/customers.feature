@@ -67,3 +67,16 @@ Scenario: Update a Customer
     Then I should see the message "Success"
     And I should see "Sir Bagel Head" in the results
     And I should not see "Albert" in the results
+
+Scenario: Delete a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Albert"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Albert" in the "Name" field
+    And I should see "4000 Penn Ave" in the "Address" field
+    And I press the "Delete" button
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should not see "Albert" in the results
