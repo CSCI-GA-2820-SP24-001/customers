@@ -43,8 +43,8 @@ Scenario: List all customers
     Then I should see the message "Success"
     And I should see "Albert" in the results
     And I should see "Ben" in the results
-    And I should not see "Carol" in the results
-    And I should not see "Shmoo Moo" in the results
+    And I should see "Carol" in the results
+    And I should see "Shmoo Moo" in the results
 
 Scenario: Update a Customer
     When I visit the "Home Page"
