@@ -9,7 +9,7 @@ Background:
         | Albert     | 4000 Penn Ave   | albert@gmail.com     | 212-123-4567    |
         | Ben        | 44 West 4th St  | ben@outlook.com      | 212-309-3131    |
         | Carol      | 1 Wall Street   | Carol@stern.nyu.edu  | 601-932-2222    |
-        | Dillan     | 611 5th Ave     | Dillan@nyu.edu       | 714-888-8888    |
+        | Shmoo Moo     | 611 5th Ave     | Dillan@nyu.edu       | 714-888-8888    |
 
 Scenario: The server is running
     When I visit the "Home Page"
@@ -24,3 +24,46 @@ Scenario: Create a Customer
     And I set the "Phonenumber" to "999-888-7777"
     And I press the "Create" button
     Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "Address" field should be empty
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"    
+    And I should see "Eileen" in the "Name" field
+    And I should see "50 Broadway St" in the "Address" field
+    And I should see "eileen@gmail.com" in the "Email" field
+    And I should see "999-888-7777" in the "Phonenumber" field
+
+Scenario: List all customers
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Albert" in the results
+    And I should see "Ben" in the results
+    And I should not see "Carol" in the results
+    And I should not see "Shmoo Moo" in the results
+
+Scenario: Update a Customer
+    When I visit the "Home Page"
+    And I set the "Name" to "Albert"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Albert" in the "Name" field
+    And I should see "4000 Penn Ave" in the "Address" field
+    When I change "Name" to "Sir Bagel Head"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Sir Bagel Head" in the "Name" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Sir Bagel Head" in the results
+    And I should not see "Albert" in the results
