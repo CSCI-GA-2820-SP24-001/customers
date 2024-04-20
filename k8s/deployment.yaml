@@ -29,7 +29,7 @@ spec:
         image: customers
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 8000
           protocol: TCP
         env:
           - name: RETRY_COUNT
@@ -44,7 +44,7 @@ spec:
           periodSeconds: 30
           httpGet:
             path: /health
-            port: 8080
+            port: 8000
         resources:
           limits:
             cpu: "0.50"
