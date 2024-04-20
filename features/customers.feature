@@ -9,7 +9,7 @@ Background:
         | Albert     | 4000 Penn Ave   | albert@gmail.com     | 212-123-4567    |
         | Ben        | 44 West 4th St  | ben@outlook.com      | 212-309-3131    |
         | Carol      | 1 Wall Street   | Carol@stern.nyu.edu  | 601-932-2222    |
-        | Shmoo Moo     | 611 5th Ave     | Dillan@nyu.edu       | 714-888-8888    |
+        | Shmoo Moo  | 611 5th Ave     | Dillan@nyu.edu       | 714-888-8888    |
 
 Scenario: The server is running
     When I visit the "Home Page"
