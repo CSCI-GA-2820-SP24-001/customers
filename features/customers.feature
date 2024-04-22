@@ -75,7 +75,7 @@ Scenario: Delete a Customer
     Then I should see the message "Success"
     And I should see "Albert" in the "Name" field
     And I should see "4000 Penn Ave" in the "Address" field
-    And I press the "Delete" button
+    When I press the "Delete" button
     And I press the "Clear" button
     And I press the "Search" button
     Then I should see the message "Success"
