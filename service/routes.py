@@ -41,8 +41,17 @@ def health_check():
 ######################################################################
 @app.route("/")
 def index():
-    """Base URL for our service"""
-    return app.send_static_file("index.html")
+    """Root URL response"""
+    app.logger.info("Request for Root URL")
+    return (
+        jsonify(
+            name="Customers Demo REST API Service",
+            version="1.0",
+            paths=url_for("get_customers, create_customers, update_customers, delete_customers, list_customers", _external=True),
+        ),
+        status.HTTP_200_OK,
+    )
+
 
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
