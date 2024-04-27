@@ -47,7 +47,8 @@ def index():
         jsonify(
             name="Customers Demo REST API Service",
             version="1.0",
-            paths=url_for("get_customers, create_customers, update_customers, delete_customers, list_customers", _external=True),
+            paths=url_for("get_customers, create_customers, update_customers, delete_customers, list_customers",
+             _external=True),
         ),
         status.HTTP_200_OK,
     )
