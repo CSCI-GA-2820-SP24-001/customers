@@ -46,6 +46,33 @@ Scenario: List all customers
     And I should see "Carol" in the results
     And I should see "Shmoo Moo" in the results
 
+Scenario: Clear UI button works
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Albert" in the results
+    And I should see "Ben" in the results
+    And I should see "Carol" in the results
+    And I should see "Shmoo Moo" in the results
+    When I set the "Name" to "Albert"
+    And I press the "Search" button
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Albert" in the "Name" field
+    And I should see "Ben" in the results
+    And I should see "Carol" in the results
+    And I should see "Shmoo Moo" in the results
+
+Scenario: Querry by Name
+    When I visit the "Home Page"
+    And I set the "Name" to "Albert"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Albert" in the "Name" field
+    And I should see "4000 Penn Ave" in the "Address" field
+    And I should not see "Ben" in the results
+
 Scenario: Update a Customer
     When I visit the "Home Page"
     And I set the "Name" to "Albert"
