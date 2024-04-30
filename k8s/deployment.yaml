@@ -25,7 +25,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: customers
-        image: cluster-registry:32000/customer:latest
+        image: image-registry.openshift-image-registry.svc:5000/aalbanese10-dev/customer:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
