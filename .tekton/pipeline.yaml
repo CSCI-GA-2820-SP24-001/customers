@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:  
-  name: cd-pipeline
+  name: cd-pipeline-1
 spec:
   description: This pipeline clones tests, lints, builds, and deploys a container to Kubernetes
   workspaces:
