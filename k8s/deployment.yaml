@@ -26,7 +26,6 @@ spec:
       containers:
       - name: customers
         image: cluster-registry:32000/customer:latest
-        image: customers
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
